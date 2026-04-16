@@ -17,7 +17,7 @@ public:
     Evaluator(const Weights& weights = Weights());
     
     double scoreApartment(const Apartment& apt) const;
-    std::vector<Apartment> rankApartments(std::vector<Apartment> apartments);
+    std::vector<Apartment> rankApartments(std::vector<Apartment> apartments) const;
     
     void setWeights(const Weights& weights);
     Weights getWeights() const;

@@ -1,0 +1,13 @@
+1
+Downtown Studio
+1800
+650
+45
+1
+Suburban House
+1200
+1100
+25
+2
+3
+6

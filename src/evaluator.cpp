@@ -4,16 +4,14 @@
 Evaluator::Evaluator(const Weights& weights) : weights(weights) {}
 
 double Evaluator::scoreApartment(const Apartment& apt) const {
-    // Simple weighted scoring (lower is better)
-    // Normalize: price and noise (minimize), space (maximize)
     double priceScore = apt.getPrice() * weights.price;
-    double spaceScore = (1000.0 - apt.getSpace()) * weights.space;  // Invert space
+    double spaceScore = (1000.0 - apt.getSpace()) * weights.space;
     double noiseScore = apt.getNoise() * weights.noise;
     
     return priceScore + spaceScore + noiseScore;
 }
 
-std::vector<Apartment> Evaluator::rankApartments(std::vector<Apartment> apartments) {
+std::vector<Apartment> Evaluator::rankApartments(std::vector<Apartment> apartments) const {
     std::sort(apartments.begin(), apartments.end(),
         [this](const Apartment& a, const Apartment& b) {
             return scoreApartment(a) < scoreApartment(b);
