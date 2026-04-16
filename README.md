@@ -7,7 +7,9 @@ A C++ interactive decision-support system that evaluates and ranks apartments ba
 - **Interactive Menu**: User-friendly command-line interface
 - **Add Apartments Dynamically**: Input apartment details at runtime
 - **Multi-criteria Evaluation**: Considers price, space, and noise level
-- **Customizable Weights**: Adjust the importance of each criterion
+- **Adjustable Preferences**: Customize the importance of each criterion with persistent weight profiles
+- **File Input**: Load apartment data from CSV files
+- **Web Interface**: Access the system through a web browser
 - **Smart Ranking**: Automatically ranks apartments from best to worst
 - **View & Manage**: Display all apartments or clear the list
 
@@ -19,12 +21,15 @@ A C++ interactive decision-support system that evaluates and ranks apartments ba
 ## Building
 
 ```bash
-make          # Compile the project
-make run      # Run the application
+make          # Compile both CLI and web versions
+make run      # Run the CLI version
+make web      # Run the web version
 make clean    # Remove build artifacts
 ```
 
 ## Usage
+
+### Command Line Version
 
 Start the program:
 ```bash
@@ -37,17 +42,41 @@ Start the program:
 2. **View all apartments** - Display all apartments in a formatted table
 3. **Rank apartments** - See apartments ranked best to worst with weights used
 4. **Customize weights** - Adjust the importance of price, space, and noise
-5. **Clear all apartments** - Remove all apartments from the list
-6. **Exit** - Close the program
+5. **Load apartments from file** - Import apartment data from a CSV file (format: ID,Price,Space,Noise)
+6. **Save weights profile** - Save current weights to a file for later use
+7. **Load weights profile** - Load previously saved weights from a file
+8. **Clear all apartments** - Remove all apartments from the list
+9. **Exit** - Close the program
 
-### Example Session
+### Web Version
 
+Start the web server:
+```bash
+./build/apartment_web
 ```
-=== Welcome to Apartment Evaluation System ===
-This system helps you find the best apartment based on your criteria.
 
-=== Apartment Evaluator Menu ===
-1. Add apartment
+Then open your browser and navigate to `http://localhost:8080`
+
+The web interface provides:
+- Form to add new apartments
+- Weight customization
+- File upload for apartment data
+- Real-time apartment list
+- Ranking functionality
+
+### File Format
+
+For loading apartments from file, use CSV format with the following columns:
+```
+ID,Price,Space,Noise
+```
+
+Example `apartments.csv`:
+```
+Downtown Studio,1800,650,45
+Suburban House,1200,1100,25
+City Loft,2200,800,60
+```
 2. View all apartments
 3. Rank apartments
 4. Customize weights

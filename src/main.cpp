@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <string>
 #include <limits>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
 #include "apartment.h"
 #include "evaluator.h"
 
@@ -12,9 +15,12 @@ void displayMenu() {
     std::cout << "2. View all apartments\n";
     std::cout << "3. Rank apartments\n";
     std::cout << "4. Customize weights\n";
-    std::cout << "5. Clear all apartments\n";
-    std::cout << "6. Exit\n";
-    std::cout << "Choose an option (1-6): ";
+    std::cout << "5. Load apartments from file\n";
+    std::cout << "6. Save weights profile\n";
+    std::cout << "7. Load weights profile\n";
+    std::cout << "8. Clear all apartments\n";
+    std::cout << "9. Exit\n";
+    std::cout << "Choose an option (1-9): ";
 }
 
 void displayApartments(const std::vector<Apartment>& apartments) {
@@ -53,6 +59,94 @@ void rankAndDisplay(std::vector<Apartment> apartments, const Evaluator& evaluato
     for (size_t i = 0; i < ranked.size(); ++i) {
         std::cout << i + 1 << ". " << ranked[i].getId() << "\n";
     }
+}
+
+bool loadApartmentsFromFile(std::vector<Apartment>& apartments, const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Error: Could not open file " << filename << "\n";
+        return false;
+    }
+    
+    std::string line;
+    int loaded = 0;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        
+        std::stringstream ss(line);
+        std::string id, priceStr, spaceStr, noiseStr;
+        
+        if (std::getline(ss, id, ',') &&
+            std::getline(ss, priceStr, ',') &&
+            std::getline(ss, spaceStr, ',') &&
+            std::getline(ss, noiseStr, ',')) {
+            
+            try {
+                double price = std::stod(priceStr);
+                double space = std::stod(spaceStr);
+                double noise = std::stod(noiseStr);
+                
+                apartments.emplace_back(id, price, space, noise);
+                loaded++;
+            } catch (const std::exception&) {
+                std::cout << "Warning: Skipping invalid line: " << line << "\n";
+            }
+        } else {
+            std::cout << "Warning: Skipping malformed line: " << line << "\n";
+        }
+    }
+    
+    std::cout << "Loaded " << loaded << " apartments from " << filename << "\n";
+    return loaded > 0;
+}
+
+bool saveWeightsProfile(const Weights& weights, const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Error: Could not create file " << filename << "\n";
+        return false;
+    }
+    
+    file << weights.price << "," << weights.space << "," << weights.noise << "\n";
+    std::cout << "Weights profile saved to " << filename << "\n";
+    return true;
+}
+
+bool loadWeightsProfile(Weights& weights, const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Error: Could not open file " << filename << "\n";
+        return false;
+    }
+    
+    std::string line;
+    if (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string priceStr, spaceStr, noiseStr;
+        
+        if (std::getline(ss, priceStr, ',') &&
+            std::getline(ss, spaceStr, ',') &&
+            std::getline(ss, noiseStr, ',')) {
+            
+            try {
+                double price = std::stod(priceStr);
+                double space = std::stod(spaceStr);
+                double noise = std::stod(noiseStr);
+                
+                double total = price + space + noise;
+                if (total > 0) {
+                    weights = Weights(price / total, space / total, noise / total);
+                    std::cout << "Weights profile loaded from " << filename << "\n";
+                    return true;
+                }
+            } catch (const std::exception&) {
+                // fall through to error
+            }
+        }
+    }
+    
+    std::cout << "Error: Invalid weights profile file\n";
+    return false;
 }
 
 int main() {
@@ -135,18 +229,53 @@ int main() {
             }
             
             case 5: {
+                std::string filename;
+                std::cout << "\n--- Load Apartments from File ---\n";
+                std::cout << "Enter filename (CSV format: ID,Price,Space,Noise): ";
+                std::getline(std::cin, filename);
+                
+                if (loadApartmentsFromFile(apartments, filename)) {
+                    std::cout << "Apartments loaded successfully!\n";
+                }
+                break;
+            }
+            
+            case 6: {
+                std::string filename;
+                std::cout << "\n--- Save Weights Profile ---\n";
+                std::cout << "Enter filename to save weights: ";
+                std::getline(std::cin, filename);
+                
+                saveWeightsProfile(currentWeights, filename);
+                break;
+            }
+            
+            case 7: {
+                std::string filename;
+                std::cout << "\n--- Load Weights Profile ---\n";
+                std::cout << "Enter filename to load weights: ";
+                std::getline(std::cin, filename);
+                
+                if (loadWeightsProfile(currentWeights, filename)) {
+                    evaluator.setWeights(currentWeights);
+                    std::cout << "Weights loaded and applied!\n";
+                }
+                break;
+            }
+            
+            case 8: {
                 apartments.clear();
                 std::cout << "\nAll apartments cleared.\n";
                 break;
             }
             
-            case 6: {
+            case 9: {
                 std::cout << "\nThank you for using Apartment Evaluator. Goodbye!\n";
                 return 0;
             }
             
             default:
-                std::cout << "\nInvalid option. Please choose 1-6.\n";
+                std::cout << "\nInvalid option. Please choose 1-9.\n";
         }
     }
     
