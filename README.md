@@ -43,15 +43,17 @@ make clean    # remove build output
 
 ## How the score works
 
-Each apartment's price, space and noise are normalized against the other apartments in the list, then combined:
+Each apartment gets a weighted **cost score**, and the lowest score ranks first:
+
+```
+score = price × w_price + (1000 − space) × w_space + noise × w_noise
+```
 
 | Criterion | Default weight | Better when |
 |-----------|---------------:|-------------|
 | Price     | 40% | lower  |
-| Space     | 35% | higher |
+| Space     | 35% | higher (sq ft, measured against 1000) |
 | Noise     | 25% | lower (0–100 scale) |
-
-Apartments are sorted by total score from best to worst.
 
 ## CLI menu
 
@@ -98,4 +100,5 @@ A sample file is included as [`apartments.csv`](apartments.csv), and [`weights_p
 - [ ] CSV upload in the web interface (currently CLI only)
 - [ ] Location and commute-time criteria
 - [ ] Amenities scoring
+- [ ] Normalize criteria to a common scale (raw price currently outweighs noise)
 - [ ] Unit tests
