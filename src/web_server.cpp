@@ -215,7 +215,7 @@ int main() {
     });
     
     // Load from file (simplified - would need proper file upload handling)
-    svr.Post("/load", [&](const httplib::Request& req, httplib::Response& res) {
+    svr.Post("/load", [&](const httplib::Request&, httplib::Response& res) {
         // For simplicity, just redirect - file upload would need more complex handling
         res.set_content("File upload not implemented in this demo", "text/plain");
     });

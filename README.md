@@ -1,136 +1,101 @@
-# Apartment Decision-Support System
+# Apartment Evaluator
 
-A C++ interactive decision-support system that evaluates and ranks apartments based on multiple weighted criteria including price, living space, and noise levels.
+![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white)
+![Build](https://img.shields.io/badge/build-make-informational)
+
+A C++ **decision-support tool** that ranks apartments using a weighted multi-criteria score of price, living space and noise level.
+It has an interactive command-line app and a small web interface built on [cpp-httplib](https://github.com/yhirose/cpp-httplib).
+
+```
+=== Ranked Apartments (Best to Worst) ===
+----------------------------------------
+1. Suburban House
+2. Quiet Apartment
+3. Downtown Studio
+4. City Loft
+5. Luxury Penthouse
+
+Weights Used:
+  Price:  40%
+  Space:  35%
+  Noise:  25%
+```
 
 ## Features
 
-- **Interactive Menu**: User-friendly command-line interface
-- **Add Apartments Dynamically**: Input apartment details at runtime
-- **Multi-criteria Evaluation**: Considers price, space, and noise level
-- **Adjustable Preferences**: Customize the importance of each criterion with persistent weight profiles
-- **File Input**: Load apartment data from CSV files
-- **Web Interface**: Access the system through a web browser
-- **Smart Ranking**: Automatically ranks apartments from best to worst
-- **View & Manage**: Display all apartments or clear the list
+- **Weighted scoring**: price (lower is better), space (higher is better), noise (lower is better)
+- **Adjustable weights**: customize what matters to you; weights are normalized to 100%
+- **Weight profiles**: save and load your preferences to and from a file
+- **CSV import**: load a list of apartments in one go
+- **Interactive CLI**: add, view, rank and clear apartments from a menu
+- **Web interface**: add apartments, tweak weights and see rankings in the browser
 
-## Prerequisites
+## Build & run
 
-- C++17 compatible compiler (g++, clang)
-- Make build tool
-
-## Building
+Requires a C++17 compiler (g++ or clang) and `make`.
 
 ```bash
-make          # Compile both CLI and web versions
-make run      # Run the CLI version
-make web      # Run the web version
-make clean    # Remove build artifacts
+make          # build both the CLI and the web server into build/
+make run      # start the CLI
+make web      # start the web server on http://localhost:8080
+make clean    # remove build output
 ```
 
-## Usage
+## How the score works
 
-### Command Line Version
+Each apartment's price, space and noise are normalized against the other apartments in the list, then combined:
 
-Start the program:
-```bash
-./build/apartment_evaluator
-```
+| Criterion | Default weight | Better when |
+|-----------|---------------:|-------------|
+| Price     | 40% | lower  |
+| Space     | 35% | higher |
+| Noise     | 25% | lower (0–100 scale) |
 
-### Menu Options
+Apartments are sorted by total score from best to worst.
 
-1. **Add apartment** - Enter a new apartment with ID, price, space, and noise level
-2. **View all apartments** - Display all apartments in a formatted table
-3. **Rank apartments** - See apartments ranked best to worst with weights used
-4. **Customize weights** - Adjust the importance of price, space, and noise
-5. **Load apartments from file** - Import apartment data from a CSV file (format: ID,Price,Space,Noise)
-6. **Save weights profile** - Save current weights to a file for later use
-7. **Load weights profile** - Load previously saved weights from a file
-8. **Clear all apartments** - Remove all apartments from the list
-9. **Exit** - Close the program
+## CLI menu
 
-### Web Version
+1. Add apartment
+2. View all apartments
+3. Rank apartments
+4. Customize weights
+5. Load apartments from file
+6. Save weights profile
+7. Load weights profile
+8. Clear all apartments
+9. Exit
 
-Start the web server:
-```bash
-./build/apartment_web
-```
+### CSV format
 
-Then open your browser and navigate to `http://localhost:8080`
-
-The web interface provides:
-- Form to add new apartments
-- Weight customization
-- File upload for apartment data
-- Real-time apartment list
-- Ranking functionality
-
-### File Format
-
-For loading apartments from file, use CSV format with the following columns:
 ```
 ID,Price,Space,Noise
-```
-
-Example `apartments.csv`:
-```
 Downtown Studio,1800,650,45
 Suburban House,1200,1100,25
 City Loft,2200,800,60
 ```
-2. View all apartments
-3. Rank apartments
-4. Customize weights
-5. Clear all apartments
-6. Exit
-Choose an option (1-6): 1
 
---- Add New Apartment ---
-Enter apartment ID: Downtown Studio
-Enter monthly price ($): 1800
-Enter space (sqft): 650
-Enter noise level (0-100): 45
-Apartment added successfully!
-```
+A sample file is included as [`apartments.csv`](apartments.csv), and [`weights_profile.txt`](weights_profile.txt) is an example saved weight profile.
 
-## Scoring Algorithm
-
-The system uses a weighted scoring model:
-- **Price** (40% by default): Lower is better
-- **Space** (35% by default): Higher is better
-- **Noise** (25% by default): Lower is better (0-100 scale)
-
-Weights are automatically normalized when customized, so they always sum to 100%.
-
-## Project Structure
+## Project structure
 
 ```
 .
-├── include/          # Header files
-│   ├── apartment.h   # Apartment class
-│   └── evaluator.h   # Evaluator and scoring logic
-├── src/              # Implementation
-│   ├── main.cpp      # Interactive menu and program logic
-│   ├── apartment.cpp # Apartment class implementation
-│   └── evaluator.cpp # Scoring and ranking implementation
-├── Makefile          # Build configuration
-└── README.md         # This file
+├── include/
+│   ├── apartment.h      # Apartment model
+│   └── evaluator.h      # Scoring and ranking
+├── src/
+│   ├── main.cpp         # Interactive CLI
+│   ├── apartment.cpp
+│   ├── evaluator.cpp
+│   └── web_server.cpp   # Web interface (cpp-httplib)
+├── external/httplib.h   # Single-header HTTP library
+├── apartments.csv       # Sample data
+└── Makefile
 ```
 
-## Compilation Details
+## Roadmap
 
-- **C++ Standard**: C++17
-- **Compiler Flags**: -Wall -Wextra -Wpedantic (warnings enabled)
-- **Output**: `build/apartment_evaluator`
-
-## Future Enhancements
-
-- File I/O (save/load apartment lists)
-- Location-based criteria
-- Commute time estimation
-- Amenities scoring
-- Database integration
-- GUI interface
-
-## License
-
-Feel free to use and modify this project for your needs.
+- [ ] CSV upload in the web interface (currently CLI only)
+- [ ] Location and commute-time criteria
+- [ ] Amenities scoring
+- [ ] Unit tests

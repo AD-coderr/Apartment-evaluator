@@ -32,12 +32,6 @@ web: $(WEB_TARGET)
 	./$(WEB_TARGET)
 
 clean:
-	rm -rf $(OBJDIR)/*.o $(TARGET) $(WEB_TARGET)
-
-run: $(TARGET)
-	./$(TARGET)
-
-clean:
 	rm -rf $(OBJDIR)
 
-.PHONY: all run clean
+.PHONY: all run web clean
